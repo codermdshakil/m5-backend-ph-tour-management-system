@@ -4,6 +4,7 @@ import app from "./app";
 
 const PORT = 5000;
 
+
 let server: Server;
 
 const startServer = async () => {
