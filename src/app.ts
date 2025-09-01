@@ -7,7 +7,7 @@ app.use(express.json());
 
 
 app.get("/", (req : Request, res:Response) => {
-  res.json({message:"Successfully Ph Tour management Systen backend Server running!"})
+  res.json({message:"Welcome to Tour management Systen backend Server!!"})
 });
 
 

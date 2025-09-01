@@ -23,3 +23,31 @@ const startServer = async () => {
 };
 
 startServer();
+
+
+/**
+ * Additional Error handle
+ * 
+ * 1. unhandled rejection error
+ * 2. uncaught rejection error
+ * 3. signal termination or sigterm
+ * 
+ * */ 
+
+
+// 1. unhandled rejection error 
+process.on("unhandledRejection", (err) => {
+  
+  console.log("Unhandled Rejection Detected.. Server shutting down!", err);
+
+  if(server){
+    server.close(() => {
+        process.exit(1)
+    });
+  }
+
+  process.exit(1);
+
+})
+// Promise.reject(new Error("I forgot to catch handle this promise!"))
+
