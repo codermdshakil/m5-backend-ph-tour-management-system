@@ -1,44 +1,34 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { UserServices } from "./user.service";
 
-
 // create a user
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
-    // handle createUser from user.service file 
+    // handle createUser from user.service file
     const user = await UserServices.createUser(req.body);
 
     res.status(StatusCodes.CREATED).json({
       messsage: "User created successfully!",
       user,
     });
-
+    
   } catch (err: any) {
-
-    console.log(err);
-    res.status(StatusCodes.BAD_REQUEST).json({
-      message: `Soemthing want wrong! ${err.message}`,
-      err,
-    });
-
+    next(err);
   }
 };
 
-
 export const UserControllers = {
-  createUser
-}
-
+  createUser,
+};
 
 // Steps:
 // route matching -> UserRoutes -> UserController.createUser -> UserServices.createUser
-
 
 // Steps
 // 1. user.interface.ts -> create user Shape
 // 2. user.model.ts -> create user model
 // 3. user.route.ts -> here handle all routes like POST, GET, PUT, PATCH, DELETE
-// 4. user.controller.ts -> 
-// 5. user.services.ts 
+// 4. user.controller.ts ->
+// 5. user.services.ts
