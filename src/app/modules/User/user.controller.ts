@@ -55,7 +55,8 @@ const createUser = catchAsync( async (req:Request, res:Response) => {
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const users = await UserServices.getAllUser();
-  res.status(StatusCodes.CREATED).json({
+  res.status(StatusCodes.OK).json({
+    success:true,
     messsage: "Get All users successfully!",
     users,
   });
