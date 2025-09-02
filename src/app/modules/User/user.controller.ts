@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
+import { sentResponse } from "../../utils/sendResponse";
 import { User } from "./user.model";
 import { UserServices } from "./user.service";
-
 
 // create user using normal function with try catch
 
@@ -22,44 +22,30 @@ import { UserServices } from "./user.service";
 //   }
 // };
 
+// create user using catchAsync
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const user = await User.create(req.body);
 
-
-// create user using catchAsync 
-const createUser = catchAsync( async (req:Request, res:Response) => {
-  
-  const {name, email} = req.body;
-  const user = await User.create({name, email});
-
-  res.status(StatusCodes.CREATED).json({
-    success:true,
-    message:"Created user successfully!",
-    user
-  })
-})
-
-// with try catch 
-// const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-
-//     const users = await UserServices.getAllUser();
-//     res.status(StatusCodes.CREATED).json({
-//       messsage: "Get All users successfully!",
-//       users,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
-// wihtout trycatch - using catchAsync where inside this function use try catch
-
-const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const users = await UserServices.getAllUser();
-  res.status(StatusCodes.OK).json({
-    success:true,
-    messsage: "Get All users successfully!",
-    users,
+  sentResponse(res, {
+    success: true,
+    statusCode: StatusCodes.CREATED,
+    message: "Successfully User Created!",
+    data: user,
   });
+});
+
+// get all user data
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserServices.getAllUser();
+
+  sentResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Get All users successfully!",
+    data: result.data,
+    meta:result.meta 
+  });
+
 });
 
 export const UserControllers = {
