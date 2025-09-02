@@ -13,7 +13,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       messsage: "User created successfully!",
       user,
     });
-    
+
   } catch (err: any) {
     next(err);
   }
