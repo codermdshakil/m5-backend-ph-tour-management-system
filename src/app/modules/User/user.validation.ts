@@ -1,5 +1,9 @@
 import z from "zod";
 
+const passwordRegex =
+  /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|:;"'<>,.?/~`]).{8,}$/;
+
+
 export const createUserZodSchema = z.object({
   name: z
     .string({ error: "Name must be string!" })

@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { UserControllers } from "./user.controller";
+import { createUserZodSchema } from "./user.validation";
 
 const router = Router();
-const passwordRegex =
-  /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|:;"'<>,.?/~`]).{8,}$/;
 
 router.post(
   "/register",
