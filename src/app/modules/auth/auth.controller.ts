@@ -10,15 +10,11 @@ const creadentialsLogin =  catchAsync(async (req: Request, res: Response) => {
 
   const loginInfo = await AuthServices.creadentialsLogin(req.body);
 
-
-
   sentResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: "User Logged In Successfully!",
-    data: {
-      email:loginInfo?._doc.email
-    } ,
+    data: loginInfo
   });
   
 });
