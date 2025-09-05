@@ -31,7 +31,7 @@ export interface IUser {
   address?: string;
   isActive?: IsActive;
   isDeleted?: string;
-  isVerified?: string;
+  isVerified?: boolean;
   role?: Role;
   auths: IAuthProvider[];
   bookings?: Types.ObjectId[]; // here we store multiple booking object id
