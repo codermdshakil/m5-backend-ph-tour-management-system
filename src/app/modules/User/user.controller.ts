@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
 import { sentResponse } from "../../utils/sendResponse";
-import { User } from "./user.model";
 import { UserServices } from "./user.service";
 
 // create user using normal function with try catch
@@ -24,7 +23,8 @@ import { UserServices } from "./user.service";
 
 // create user using catchAsync
 const createUser = catchAsync(async (req: Request, res: Response) => {
-  const user = await User.create(req.body);
+
+  const user = await UserServices.createUser(req.body)
 
   sentResponse(res, {
     success: true,
