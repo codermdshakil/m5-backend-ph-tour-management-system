@@ -1,20 +1,11 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Router } from "express";
+import { validateRequest } from "../../middlewares/validateRequest";
 import { UserControllers } from "./user.controller";
 import { createUserZodSchema } from "./user.validation";
 
 const router = Router();
 
-router.post(
-  "/register",
-  async (req: Request, res: Response, next: NextFunction) => {
-   
-    req.body = await createUserZodSchema.parseAsync(req.body);
-    console.log(req.body, 'from hit');
-
-    // next();
-  },
-  UserControllers.createUser
-);
+router.post("/register",validateRequest(createUserZodSchema),UserControllers.createUser);
 
 router.get("/all-users", UserControllers.getAllUsers);
 
