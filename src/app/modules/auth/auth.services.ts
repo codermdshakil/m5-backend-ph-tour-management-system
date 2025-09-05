@@ -34,9 +34,8 @@ const creadentialsLogin = async (payload: Partial<IUser>) => {
 
   const accessToken = jwt.sign(jwtPayload, "secret", { expiresIn: "1d" });
 
-
   return {
-    accessToken
+    accessToken,
   };
 };
 
