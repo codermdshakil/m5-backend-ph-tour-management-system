@@ -25,7 +25,9 @@
     "typescript-eslint": "^8.41.0"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/morgan": "^1.9.10",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",

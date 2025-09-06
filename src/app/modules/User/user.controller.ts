@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
 import { sentResponse } from "../../utils/sendResponse";
-import { User } from "./user.model";
 import { UserServices } from "./user.service";
 
 // create user using normal function with try catch
@@ -24,13 +23,39 @@ import { UserServices } from "./user.service";
 
 // create user using catchAsync
 const createUser = catchAsync(async (req: Request, res: Response) => {
-  const user = await User.create(req.body);
+
+  const user = await UserServices.createUser(req.body)
 
   sentResponse(res, {
     success: true,
     statusCode: StatusCodes.CREATED,
     message: "Successfully User Created!",
     data: user,
+  });
+});
+
+// update user
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+
+  // user id
+  const userId = req.params.id;
+
+  // jwt verified token
+  // const token = req.headers.authorization;
+  // const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_TOKEN) as JwtPayload;
+  const verifiedToken = req.user;
+  
+  // payload 
+  const payload = req.body;
+  
+  const updatedUser = await UserServices.updateUser(userId,payload, verifiedToken) ;
+
+
+  sentResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Successfully User Updated!",
+    data: updatedUser,
   });
 });
 
@@ -50,6 +75,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
 export const UserControllers = {
   createUser,
+  updateUser,
   getAllUsers,
 };
 
