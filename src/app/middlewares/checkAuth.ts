@@ -20,6 +20,8 @@ export const checkAuth = (...authRoles:string[]) =>  async (req: Request, res: R
         throw new AppError(403, "You are not permitted to view this route!");
       }
 
+      req.user = verifiedJWTToken;
+      
       next();
     } catch (error) {
       next(error);

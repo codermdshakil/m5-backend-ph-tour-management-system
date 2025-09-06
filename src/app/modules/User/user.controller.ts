@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { JwtPayload } from "jsonwebtoken";
-import { envVars } from "../../config/env";
 import { catchAsync } from "../../utils/catchAsync";
-import { verifyToken } from "../../utils/jwt";
 import { sentResponse } from "../../utils/sendResponse";
 import { UserServices } from "./user.service";
 
@@ -44,8 +41,9 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
 
   // jwt verified token
-  const token = req.headers.authorization;
-  const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_TOKEN) as JwtPayload;
+  // const token = req.headers.authorization;
+  // const verifiedToken = verifyToken(token as string, envVars.JWT_ACCESS_TOKEN) as JwtPayload;
+  const verifiedToken = req.user;
   
   // payload 
   const payload = req.body;
