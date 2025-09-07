@@ -64,21 +64,6 @@ const getNewAccessToken =  catchAsync(async (req: Request, res: Response) => {
 // logout 
 const logout =  catchAsync(async (req: Request, res: Response) => {
 
-  
-  // // clear accessToken from cookie
-  // res.clearCookie("accessToken", {
-  //   httpOnly:true,
-  //   secure:false,
-  //   sameSite:"lax"
-  // });
-  
-  // // clear refreshToken from cookie
-  // res.clearCookie("refreshToken", {
-  //   httpOnly:true,
-  //   secure:false,
-  //   sameSite:"lax"
-  // });
-  
   // clear accessToken and refreshToken
   clearAuthCookie(res);
 
@@ -91,8 +76,32 @@ const logout =  catchAsync(async (req: Request, res: Response) => {
   
 });
 
+// reset password
+const resetPassword =  catchAsync(async (req: Request, res: Response) => {
+
+  const newPassword = req.body.newPassword;
+  const oldPassword = req.body.oldPassword;
+
+  const decoredToken = req.user;
+
+ 
+
+  const newUpdatedPassword = await AuthServices.resetPassword(newPassword, oldPassword, decoredToken);
+
+  console.log(newUpdatedPassword, "newUpdatedPassword");
+ 
+  sentResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Password changed successfully!",
+    data: null
+  });
+  
+});
+
 export const AuthController = {
   creadentialsLogin,
   getNewAccessToken,
-  logout
+  logout,
+  resetPassword
 }

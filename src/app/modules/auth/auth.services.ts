@@ -1,7 +1,12 @@
 import bcryptjs from "bcryptjs";
 import { StatusCodes } from "http-status-codes";
+import { JwtPayload } from "jsonwebtoken";
+import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
-import { createNewAccessTokenUsingRefreshToken, createUserTokens } from "../../utils/userTokens";
+import {
+  createNewAccessTokenUsingRefreshToken,
+  createUserTokens,
+} from "../../utils/userTokens";
 import { IUser } from "../User/user.interface";
 import { User } from "../User/user.model";
 
@@ -42,16 +47,39 @@ const creadentialsLogin = async (payload: Partial<IUser>) => {
 
 // get refresh-token
 const getNewAccessToken = async (refreshToken: string) => {
-
-  const newAccessToken = await createNewAccessTokenUsingRefreshToken(refreshToken);
+  const newAccessToken = await createNewAccessTokenUsingRefreshToken(
+    refreshToken
+  );
 
   return {
-    accessToken:newAccessToken
+    accessToken: newAccessToken,
+  };
+};
+
+// reset password
+const resetPassword = async ( newPassword: string, oldPassword: string, decoredToken: JwtPayload ) => {
+
+
+ 
+  const user = await User.findById(decoredToken.userId);
+
+  // get old password matched or not
+  const isOldPasswordMatched = await bcryptjs.compare(oldPassword, user!.password as string);
+
+
+  if(!isOldPasswordMatched) {  
+    throw new AppError(  StatusCodes.UNAUTHORIZED,"Old password does not matched!" ); 
   }
 
+  // update password using newPassword
+  user!.password = await bcryptjs.hash(newPassword, parseInt(envVars.BCRYPT_SALT_ROUND));
+
+  // save user with updated password
+  user!.save();
 };
 
 export const AuthServices = {
   creadentialsLogin,
   getNewAccessToken,
+  resetPassword,
 };
