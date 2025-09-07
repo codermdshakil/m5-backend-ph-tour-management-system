@@ -46,18 +46,15 @@ const createUser = async (payload: Partial<IUser>) => {
 };
 
 // update user
-const updateUser = async (
-  userId: string,
-  payload: Partial<IUser>,
-  decodedToken: JwtPayload
-) => {
+const updateUser = async ( userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+
+
   /**
    *
    * email - cannot update
    * name, phone, password, address,
    * password - re hashing,
    * only Admin, Super Admin isDelete, isVerified....
-   *
    * promoting to superadmin - only super admin can do it
    *
    */
