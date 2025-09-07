@@ -19,6 +19,25 @@ const creadentialsLogin =  catchAsync(async (req: Request, res: Response) => {
   
 });
 
+// refresh token implement
+const getNewAccessToken =  catchAsync(async (req: Request, res: Response) => {
+
+  // get refreshToken from cookies 
+  // const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.headers.authorization;
+
+  const tokenInfo = await AuthServices.getNewAccessToken(refreshToken as string)
+
+  sentResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "User Logged In Successfully!",
+    data: tokenInfo
+  });
+  
+});
+
 export const AuthController = {
-  creadentialsLogin
+  creadentialsLogin,
+  getNewAccessToken
 }

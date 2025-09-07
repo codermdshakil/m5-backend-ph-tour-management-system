@@ -14,7 +14,7 @@ export const checkAuth = (...authRoles:string[]) =>  async (req: Request, res: R
       }
 
       // verified token
-      const verifiedJWTToken = verifyToken(accessToken,envVars.JWT_ACCESS_TOKEN) as JwtPayload;
+      const verifiedJWTToken = verifyToken(accessToken,envVars.JWT_ACCESS_SECRET) as JwtPayload;
 
       if(!authRoles.includes(verifiedJWTToken.role)){
         throw new AppError(403, "You are not permitted to view this route!");
