@@ -84,9 +84,7 @@ const resetPassword =  catchAsync(async (req: Request, res: Response) => {
 
   const decoredToken = req.user;
 
- 
-
-  const newUpdatedPassword = await AuthServices.resetPassword(newPassword, oldPassword, decoredToken);
+  const newUpdatedPassword = await AuthServices.resetPassword(newPassword, oldPassword, decoredToken!);
 
   console.log(newUpdatedPassword, "newUpdatedPassword");
  
