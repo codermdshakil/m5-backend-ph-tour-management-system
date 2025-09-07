@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync";
+import { clearAuthCookie } from "../../utils/clearCookie";
 import { sentResponse } from "../../utils/sendResponse";
 import { setAuthCookie } from "../../utils/setCookie";
 import { AuthServices } from "./auth.services";
 
 
-
+// login with email password with jwt
 const creadentialsLogin =  catchAsync(async (req: Request, res: Response) => {
 
   const loginInfo = await AuthServices.creadentialsLogin(req.body);
@@ -47,11 +48,6 @@ const getNewAccessToken =  catchAsync(async (req: Request, res: Response) => {
 
   const tokenInfo = await AuthServices.getNewAccessToken(refreshToken as string);
 
-    // set accessToken to cookie
-  // res.cookie("accessToken", tokenInfo.accessToken, {
-  //   httpOnly:true,
-  //   secure:false
-  // });
 
   // set cookie
   setAuthCookie(res, tokenInfo.accessToken);
@@ -59,13 +55,44 @@ const getNewAccessToken =  catchAsync(async (req: Request, res: Response) => {
   sentResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: "User Logged In Successfully!",
+    message: "New Access Token retrived Successfully!",
     data: tokenInfo.accessToken
+  });
+  
+});
+
+// logout 
+const logout =  catchAsync(async (req: Request, res: Response) => {
+
+  
+  // // clear accessToken from cookie
+  // res.clearCookie("accessToken", {
+  //   httpOnly:true,
+  //   secure:false,
+  //   sameSite:"lax"
+  // });
+  
+  // // clear refreshToken from cookie
+  // res.clearCookie("refreshToken", {
+  //   httpOnly:true,
+  //   secure:false,
+  //   sameSite:"lax"
+  // });
+  
+  // clear accessToken and refreshToken
+  clearAuthCookie(res);
+
+  sentResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "User logout successfully!",
+    data: null
   });
   
 });
 
 export const AuthController = {
   creadentialsLogin,
-  getNewAccessToken
+  getNewAccessToken,
+  logout
 }
