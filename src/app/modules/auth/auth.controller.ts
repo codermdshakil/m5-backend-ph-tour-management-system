@@ -83,7 +83,6 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
     decoredToken as JwtPayload
   );
 
-  console.log(newUpdatedPassword, "newUpdatedPassword");
 
   sentResponse(res, {
     success: true,

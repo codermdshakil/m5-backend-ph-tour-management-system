@@ -8,7 +8,6 @@ import { User } from "./user.model";
 
 // create a user
 const createUser = async (payload: Partial<IUser>) => {
-  console.log(payload, "payload from services");
   // distructure
   const { email, password, ...rest } = payload;
 
@@ -25,7 +24,6 @@ const createUser = async (payload: Partial<IUser>) => {
     password as string,
     parseInt(envVars.BCRYPT_SALT_ROUND)
   );
-  console.log(hashPassword, "hashed password");
 
   // auth provider
   const authProvider: IAuthProvider = {
