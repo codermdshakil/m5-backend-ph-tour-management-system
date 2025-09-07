@@ -69,7 +69,6 @@ export const createNewAccessTokenUsingRefreshToken = async (refreshToken:string)
     envVars.JWT_ACCESS_EXPIRES
   );
 
-  console.log(accessToken, 'generate access token');
 
   return {
     accessToken,

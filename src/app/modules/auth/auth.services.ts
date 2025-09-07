@@ -36,7 +36,6 @@ const creadentialsLogin = async (payload: Partial<IUser>) => {
   // delete password
 
   const { password: pass, ...rest } = isUserExist.toObject();
-  // console.log(isUserExist);
 
   return {
     accessToken: userTokens.accessToken,
