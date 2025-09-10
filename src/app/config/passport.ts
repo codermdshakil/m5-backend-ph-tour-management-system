@@ -9,7 +9,7 @@ import { envVars } from "./env";
 
  
 
-// google login 
+// google login using passport 
 passport.use(
     new LocalStrategy ({
         usernameField: "email",
