@@ -23,7 +23,7 @@ passport.use(
             // }
 
             if (!isUserExist) {
-                return done("User does not exist")
+                return done("User does not exist!")
             }
 
             const isGoogleAuthenticated = isUserExist.auths.some(providerObjects => providerObjects.provider == "google")
@@ -42,7 +42,7 @@ passport.use(
                 return done(null, false, { message: "Password does not match" })
             }
 
-            return done(null, isUserExist)
+            return done(null, isUserExist.toObject())
 
         } catch (error) {
             console.log(error);

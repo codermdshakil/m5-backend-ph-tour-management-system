@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
+import passport from "passport";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { catchAsync } from "../../utils/catchAsync";
@@ -10,32 +11,69 @@ import { setAuthCookie } from "../../utils/setCookie";
 import { createUserTokens } from "../../utils/userTokens";
 import { AuthServices } from "./auth.services";
 
-// login with email password with jwt
-const creadentialsLogin = catchAsync(async (req: Request, res: Response) => {
-  const loginInfo = await AuthServices.creadentialsLogin(req.body);
+// login with email password with jwt / google login
+const creadentialsLogin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // const loginInfo = await AuthServices.creadentialsLogin(req.body);
 
-  // set accessToken to cookie
-  // res.cookie("accessToken", loginInfo.accessToken, {
-  //   httpOnly:true,
-  //   secure:false
-  // });
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
+      // set accessToken and refreshToken
 
-  // set accessToken to cookie
-  // res.cookie("refreshToken", loginInfo.refreshToken, {
-  //   httpOnly:true,
-  //   secure:false
-  // });
+      if (err) {
+        // return next(err);
+        console.log("from err");
+        return next(new AppError(402, err));
+      }
 
-  // set accessToken and refreshToken
-  setAuthCookie(res, loginInfo);
+      if (!user) {
+        console.log("from !user");
+        return next(new AppError(401, info.message));
+      }
 
-  sentResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "User Logged In Successfully!",
-    data: loginInfo,
-  });
-});
+      const userTokens = await createUserTokens(user);
+
+      // delete user password property
+      // delete user.toObject().password;
+      const { password, ...rest } = user;
+
+      // using
+      setAuthCookie(res, userTokens);
+
+      sentResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: "User Logged In Successfully!",
+        data: {
+          accessToken: userTokens.accessToken,
+          refreshToken: userTokens.refreshToken,
+          user: rest,
+        },
+      });
+    })(req, res, next);
+
+    // set accessToken to cookie
+    // res.cookie("accessToken", loginInfo.accessToken, {
+    //   httpOnly:true,
+    //   secure:false
+    // });
+
+    // set refreshToken to cookie
+    // res.cookie("refreshToken", loginInfo.refreshToken, {
+    //   httpOnly:true,
+    //   secure:false
+    // });
+
+    // set accessToken and refreshToken
+    // setAuthCookie(res, loginInfo);
+
+    // sentResponse(res, {
+    //   success: true,
+    //   statusCode: StatusCodes.OK,
+    //   message: "User Logged In Successfully!",
+    //   data: loginInfo,
+    // });
+  }
+);
 
 // refresh token implement
 const getNewAccessToken = catchAsync(async (req: Request, res: Response) => {
@@ -83,7 +121,6 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
     decoredToken as JwtPayload
   );
 
-
   sentResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -95,7 +132,6 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
 // google callback controller
 const googleCallbackController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
     const user = req.user;
 
     if (!user) {
@@ -105,11 +141,9 @@ const googleCallbackController = catchAsync(
     const tokenInfo = createUserTokens(user);
     setAuthCookie(res, tokenInfo);
 
-
     res.redirect(envVars.FRONTEND_URL);
   }
 );
-
 
 export const AuthController = {
   creadentialsLogin,
