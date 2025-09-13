@@ -20,6 +20,8 @@ export const globalErrorHandler = (
    * Mongoose error handle globally 
    * - duplicate error handle using code = 11000  
    * - objectId error / CastError handle
+   * - ValidationError
+   * 
    * */ 
 
   let statusCode = 500;
@@ -35,6 +37,10 @@ export const globalErrorHandler = (
   else if(err.name === "CastError"){
     statusCode = 400;
     message = "Invalid mongoDB ObjectId. Please provide a valid Id"
+  }
+  else if(err.name === "ValidationError"){
+    statusCode = 400;
+    message = "Validation error Occured!"
   }
   else if (err instanceof AppError) {
     statusCode = err.statusCode;
