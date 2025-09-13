@@ -9,10 +9,34 @@ export const globalErrorHandler = (
   next: NextFunction
 ) => {
 
+  /**
+   * Mongoose
+   * Zod
+   *
+   * */ 
+
+
+  /**
+   * Mongoose error handle globally 
+   * - duplicate error handle using code = 11000  
+   * - objectId error / CastError handle
+   * */ 
+
   let statusCode = 500;
   let message = "Something want wrong!";
 
-  if (err instanceof AppError) {
+  // duplicate error handle using code = 11000  
+  if(err.code === 11000){
+    statusCode = 400;
+    const matchedArray = err.message.match(/"([^*]*)"/);
+    message = `${matchedArray[1]} already exist!`
+  }
+  // objectId error / CastError handle
+  else if(err.name === "CastError"){
+    statusCode = 400;
+    message = "Invalid mongoDB ObjectId. Please provide a valid Id"
+  }
+  else if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
   }
