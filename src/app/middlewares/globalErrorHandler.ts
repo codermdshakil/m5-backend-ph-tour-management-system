@@ -27,6 +27,9 @@ export const globalErrorHandler = (
   let statusCode = 500;
   let message = "Something want wrong!";
 
+  // to store errors path and message in a object;
+   const errorSources: any = []
+
   // duplicate error handle using code = 11000  
   if(err.code === 11000){
     statusCode = 400;
@@ -40,6 +43,12 @@ export const globalErrorHandler = (
   }
   else if(err.name === "ValidationError"){
     statusCode = 400;
+   
+    const errorObjects = Object.values(err.errors);
+    errorObjects.forEach((errorObject:any) => errorSources.push({
+      path:errorObject.path,
+      message:errorObject.message
+    }))
     message = "Validation error Occured!"
   }
   else if (err instanceof AppError) {
@@ -54,7 +63,8 @@ export const globalErrorHandler = (
   res.status(statusCode).json({
     success: false,
     message,
-    err,
+    errorSources,
+    // err,
     stack: envVars.NODE_ENV === "development" ? err.stack : null,
   });
 };
