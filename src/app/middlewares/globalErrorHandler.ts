@@ -30,17 +30,18 @@ export const globalErrorHandler = (
   // to store errors path and message in a object;
    const errorSources: any = []
 
-  // duplicate error handle using code = 11000  
+  // mongooose - duplicate error handle using code = 11000  
   if(err.code === 11000){
     statusCode = 400;
     const matchedArray = err.message.match(/"([^*]*)"/);
     message = `${matchedArray[1]} already exist!`
   }
-  // objectId error / CastError handle
+  // mongoose - objectId error / CastError handle
   else if(err.name === "CastError"){
     statusCode = 400;
     message = "Invalid mongoDB ObjectId. Please provide a valid Id"
   }
+  // mongoose - validation error
   else if(err.name === "ValidationError"){
     statusCode = 400;
    
