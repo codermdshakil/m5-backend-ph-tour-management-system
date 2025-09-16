@@ -4,9 +4,9 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sentResponse } from "../../utils/sendResponse";
 import { DivisionServices } from "./division.serviecs";
 
+
+// create new division
 const createDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-
-
     const division = await DivisionServices.createDivision(req.body);
 
     sentResponse(res, {
@@ -18,6 +18,44 @@ const createDivision = catchAsync( async (req: Request, res: Response, next: Nex
   }
 );
 
+// get all divition
+const getAllDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
+  
+  const result = await DivisionServices.getAllDivision();
+  
+    sentResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Get All divisions successfully!",
+      data: result.data,
+      meta:result.meta 
+    });
+
+  }
+);
+
+// get all divition
+const updateDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
+  
+  const divisionId = req.params.id;
+
+  const updatedDivision = await DivisionServices.updateDivision(divisionId, req.body);
+  
+    sentResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Get All divisions successfully!",
+      data: updatedDivision
+    });
+
+  }
+);
+
+
+ 
+
 export const DivisionController = {
   createDivision,
+  getAllDivision, 
+  updateDivision
 };
