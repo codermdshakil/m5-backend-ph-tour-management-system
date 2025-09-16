@@ -10,6 +10,7 @@ const router = Router();
 router.post("/create", validateRequest(createDivisionZodSchema),checkAuth(Role.ADMIN, Role.SUPER_ADMIN),DivisionController.createDivision);
 router.get("/", checkAuth(Role.SUPER_ADMIN, Role.ADMIN),DivisionController.getAllDivision);
 router.patch("/:id", validateRequest(updateDivisionZodSchema), checkAuth(...Object.values(Role)), DivisionController.updateDivision);
+router.delete("/:id",DivisionController.deleteDivision);
 
 
 

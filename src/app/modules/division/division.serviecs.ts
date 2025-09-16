@@ -1,13 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelpers/appError";
 import { IDivision } from "./division.interface";
-import { Divistion } from "./division.model";
+import { Division } from "./division.model";
 
 // create division
 const createDivision = async (payload: Partial<IDivision>) => {
   const { name, slug, ...rest } = payload;
 
-  const isDivisionExist = await Divistion.findOne({ slug });
+  const isDivisionExist = await Division.findOne({ slug });
 
   // check  deivision exist
   if (isDivisionExist) {
@@ -15,7 +15,7 @@ const createDivision = async (payload: Partial<IDivision>) => {
   }
 
   // create
-  const division = await Divistion.create({
+  const division = await Division.create({
     name,
     slug,
     ...rest,
@@ -25,10 +25,10 @@ const createDivision = async (payload: Partial<IDivision>) => {
   return division;
 };
 
-// get all user
+// get all division
 const getAllDivision = async () => {
-  const users = await Divistion.find({});
-  const totalUsers = await Divistion.countDocuments();
+  const users = await Division.find({});
+  const totalUsers = await Division.countDocuments();
 
   return {
     data: users,
@@ -38,15 +38,16 @@ const getAllDivision = async () => {
   };
 };
 
+// update division
 const updateDivision = async (divisionId: string,payload: Partial<IDivision>) => {
-  const ifDivisionExist = await Divistion.findById(divisionId);
+  const ifDivisionExist = await Division.findById(divisionId);
 
   // check user exist or not
   if (!ifDivisionExist) {
     throw new AppError(StatusCodes.NOT_FOUND, "Division not found!");
   }
 
-  const newUpdatedUser = await Divistion.findByIdAndUpdate(divisionId, payload, {
+  const newUpdatedUser = await Division.findByIdAndUpdate(divisionId, payload, {
     new: true,
     runValidators: true,
   });
@@ -54,8 +55,25 @@ const updateDivision = async (divisionId: string,payload: Partial<IDivision>) =>
   return newUpdatedUser;
 };
 
+// delete a division
+const deleteDivision = async (divisionId: string) => {
+
+
+  const ifDivisionExist = await Division.findById(divisionId);
+
+  // check user exist or not
+  if (!ifDivisionExist) {
+    throw new AppError(StatusCodes.NOT_FOUND, "Division not found!");
+  }
+
+  const deletedDivision = await Division.findByIdAndDelete(divisionId);
+  return deletedDivision;
+  
+};
+
 export const DivisionServices = {
   createDivision,
   getAllDivision,
   updateDivision,
+  deleteDivision
 };

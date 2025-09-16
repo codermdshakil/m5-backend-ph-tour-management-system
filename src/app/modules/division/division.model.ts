@@ -14,4 +14,4 @@ const divisionSchema = new Schema<IDivision>(
   });
 
 
-export const Divistion = model<IDivision>("Division", divisionSchema);
+export const Division = model<IDivision>("Division", divisionSchema);
