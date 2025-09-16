@@ -44,4 +44,4 @@ const tourSchema = new Schema<ITour>(
   }
 );
 
-export const Tour = model<ITour>("Tour", tourSchema)
+export const Tour = model<ITour>("Tour", tourSchema);
