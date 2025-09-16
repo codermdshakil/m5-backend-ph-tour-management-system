@@ -4,7 +4,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import {
-  createNewAccessTokenUsingRefreshToken
+    createNewAccessTokenUsingRefreshToken
 } from "../../utils/userTokens";
 import { User } from "../User/user.model";
 
