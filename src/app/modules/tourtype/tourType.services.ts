@@ -30,7 +30,26 @@ const getAllTourTypes = async () => {
   };
 };
 
+// update tourType
+const updateTourType = async (tourId:string, payload:Partial<ITourType>) => {
+
+  const isTourTypeExist = await TourType.findById(tourId);
+
+  if(!isTourTypeExist){
+    throw new AppError(400, "Tour Type is not Found!")
+  }
+
+  const updatedTourType = await TourType.findByIdAndUpdate(
+    tourId,
+    { $set: payload },
+    { new: true, runValidators: true }
+  );
+
+  return updatedTourType;
+};
+
 export const TourTypeServices = {
   createTourType,
   getAllTourTypes,
+  updateTourType
 };
