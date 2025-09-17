@@ -4,14 +4,11 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sentResponse } from "../../utils/sendResponse";
 import { TourTypeServices } from "./tourType.services";
 
-
 // create tour type
 const createTourType = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
     // get response
     const tourType = await TourTypeServices.createTourType(req.body);
-
 
     // sent response
     sentResponse(res, {
@@ -23,6 +20,22 @@ const createTourType = catchAsync(
   }
 );
 
+// get all tour types
+const getAllTourTypes = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await TourTypeServices.getAllTourTypes();
+
+    sentResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Get All Tour Types successfully!",
+      data: result.data,
+      meta: result.meta,
+    });
+  }
+);
+
 export const TourTypeController = {
-  createTourType
-}
+  createTourType,
+  getAllTourTypes,
+};
