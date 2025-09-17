@@ -48,8 +48,21 @@ const updateTourType = async (tourId:string, payload:Partial<ITourType>) => {
   return updatedTourType;
 };
 
+// delete tourType
+const deleteTourType = async (tourId: string) => {
+  const deletedTourType = await TourType.findByIdAndDelete(tourId);
+
+  if (!deletedTourType) {
+    throw new AppError(404, "Tour Type not found!");
+  }
+
+  return deletedTourType;
+};
+
+
 export const TourTypeServices = {
   createTourType,
   getAllTourTypes,
-  updateTourType
+  updateTourType,
+  deleteTourType
 };
