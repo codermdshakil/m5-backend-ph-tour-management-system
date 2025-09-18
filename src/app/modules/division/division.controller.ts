@@ -1,78 +1,71 @@
-import { NextFunction, Request, Response } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sentResponse } from "../../utils/sendResponse";
 import { DivisionServices } from "./division.serviecs";
 
-
-// create new division
-const createDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-    const division = await DivisionServices.createDivision(req.body);
-
+// create
+const createDivision = catchAsync(async (req: Request, res: Response) => {
+    const result = await DivisionServices.createDivision(req.body);
     sentResponse(res, {
-      success: true,
-      statusCode: StatusCodes.CREATED,
-      message: "Successfully Division Created!",
-      data: division,
+        statusCode: 201,
+        success: true,
+        message: "Division created",
+        data: result,
     });
-  }
-);
+});
 
-// get all divition
-const getAllDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-  
-  const result = await DivisionServices.getAllDivision();
-  
+// get alls division
+const getAllDivisions = catchAsync(async (req: Request, res: Response) => {
+    const result = await DivisionServices.getAllDivisions();
     sentResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "Get All divisions successfully!",
-      data: result.data,
-      meta:result.meta 
+        statusCode: 200,
+        success: true,
+        message: "Divisions retrieved",
+        data: result.data,
+        meta: result.meta,
     });
+});
 
-  }
-);
-
-// get all divition
-const updateDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-  
-  const divisionId = req.params.id;
-
-  const updatedDivision = await DivisionServices.updateDivision(divisionId, req.body);
-  
+// get single division
+const getSingleDivision = catchAsync(async (req: Request, res: Response) => {
+    const slug = req.params.slug
+    const result = await DivisionServices.getSingleDivision(slug);
     sentResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "Get All divisions successfully!",
-      data: updatedDivision
+        statusCode: 200,
+        success: true,
+        message: "Divisions retrieved",
+        data: result.data,
     });
+});
 
-  }
-);
+// update
+const updateDivision = catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id;
 
-// delete division
-const deleteDivision = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
-  
-  const divisionId = req.params.id;
-  const deletedDivision = await DivisionServices.deleteDivision(divisionId);
-  
+    const result = await DivisionServices.updateDivision(id, req.body);
     sentResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "Division Deleted successfully!",
-      data: deletedDivision
+        statusCode: 200,
+        success: true,
+        message: "Division updated",
+        data: result,
     });
+});
 
-  }
-);
-
-
- 
+// delete
+const deleteDivision = catchAsync(async (req: Request, res: Response) => {
+    const result = await DivisionServices.deleteDivision(req.params.id);
+    sentResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Division deleted",
+        data: result,
+    });
+});
 
 export const DivisionController = {
-  createDivision,
-  getAllDivision, 
-  updateDivision,
-  deleteDivision
+    createDivision,
+    getAllDivisions,
+    getSingleDivision,
+    updateDivision,
+    deleteDivision,
 };
