@@ -23,6 +23,8 @@ const getAllTours = async (query: Record<string,string>) => {
     const filter = query;
     const searchTerm = query.searchTerm || "";
     const sort = query.sort || "-createdAt";
+    const fields = query.fields || "";
+
 
   
     for(const field of excludeField){
@@ -53,7 +55,7 @@ const getAllTours = async (query: Record<string,string>) => {
     } 
 
 
-    const tours = await Tour.find(searchQuery).find(filter).sort(sort);
+    const tours = await Tour.find(searchQuery).find(filter).sort(sort).select(fields);
 
 
     const totalTours = await Tour.countDocuments();
