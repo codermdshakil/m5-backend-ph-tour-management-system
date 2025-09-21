@@ -1,6 +1,4 @@
 import AppError from "../../errorHelpers/appError";
-import { QueryBuilder } from "../../utils/QueryBuilder";
-import { tourSearchableFields } from "./tour.constant";
 import { ITour } from "./tour.interface";
 import { Tour } from "./tour.model";
 
@@ -18,28 +16,17 @@ const createTour = async (payload: ITour) => {
 };
 
 // get all tours
-const getAllTours = async (query: Record<string, string>) => {
+const getAllTours = async (query: Record<string,string>) => {
 
-
-    const queryBuilder = new QueryBuilder(Tour.find(), query)
-
-    const tours = await queryBuilder
-        .search(tourSearchableFields)
-        .filter()
-        .sort()
-        .fields()
-        .paginate()
-
-
-    const [data, meta] = await Promise.all([
-        tours.build(),
-        queryBuilder.getMeta()
-    ])
-
+    const filter = query;
+    const tours = await Tour.find(filter);
+    const totalTours = await Tour.countDocuments();
 
     return {
-        data,
-        meta
+        data:tours,
+        meta:{
+            total:totalTours
+        }
     }
 };
 

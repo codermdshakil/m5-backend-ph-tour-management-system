@@ -31,6 +31,8 @@ divisionSchema.pre("save", async function (next) {
 
 
 divisionSchema.pre("findOneAndUpdate", async function (next) {
+
+  // get document
     const division = this.getUpdate() as Partial<IDivision>
 
     if (division.name) {
@@ -45,6 +47,7 @@ divisionSchema.pre("findOneAndUpdate", async function (next) {
         division.slug = slug
     }
 
+    // set updated document
     this.setUpdate(division)
 
     next()
