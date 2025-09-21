@@ -1,4 +1,5 @@
 import AppError from "../../errorHelpers/appError";
+import { tourSearchableFields } from "./tour.constant";
 import { ITour } from "./tour.interface";
 import { Tour } from "./tour.model";
 
@@ -19,9 +20,36 @@ const createTour = async (payload: ITour) => {
 const getAllTours = async (query: Record<string,string>) => {
 
     const filter = query;
-    const tours = await Tour.find(filter);
-    const totalTours = await Tour.countDocuments();
+    const searchTerm = query.searchTerm || "";
 
+    delete filter["searchTerm"];
+
+    console.log(filter, "hit filter");
+    console.log(searchTerm, "hit searchTerm");
+
+
+    // raw filtering 
+    // const tours = await Tour.find(filter);
+
+    // raw searching
+
+    // ##  search just based one field that is title
+    // const tours = await Tour.find({
+    //     title:{$regex:searchTerm, $options:"i"}
+    // });
+
+    // ## search just based on multiple field that is  title , description, location 
+
+   
+    const searchQuery = {
+        $or:tourSearchableFields.map((field) => ( {[field]:{$regex:searchTerm, $options:"i"}}))
+    } 
+
+
+    const tours = await Tour.find(searchQuery).find(filter);
+
+
+    const totalTours = await Tour.countDocuments();
     return {
         data:tours,
         meta:{
