@@ -1,3 +1,4 @@
+import { excludeField } from "../../constants";
 import AppError from "../../errorHelpers/appError";
 import { tourSearchableFields } from "./tour.constant";
 import { ITour } from "./tour.interface";
@@ -21,11 +22,17 @@ const getAllTours = async (query: Record<string,string>) => {
 
     const filter = query;
     const searchTerm = query.searchTerm || "";
+    const sort = query.sort || "-createdAt";
 
-    delete filter["searchTerm"];
+  
+    for(const field of excludeField){
+        delete filter[field];
+    };
+ 
 
-    console.log(filter, "hit filter");
-    console.log(searchTerm, "hit searchTerm");
+
+
+ 
 
 
     // raw filtering 
@@ -46,7 +53,7 @@ const getAllTours = async (query: Record<string,string>) => {
     } 
 
 
-    const tours = await Tour.find(searchQuery).find(filter);
+    const tours = await Tour.find(searchQuery).find(filter).sort(sort);
 
 
     const totalTours = await Tour.countDocuments();
