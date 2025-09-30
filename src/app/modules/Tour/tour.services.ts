@@ -23,19 +23,18 @@ const getAllTours = async (query: Record<string,string>) => {
     const filter = query;
     const searchTerm = query.searchTerm || "";
     const sort = query.sort || "-createdAt";
-    const fields = query.fields || "";
+
+    // field filtering 
+    const fields = query.fields.split(",").join(" ") || "";
 
 
   
     for(const field of excludeField){
+        console.log(field);
         delete filter[field];
     };
- 
-
-
 
  
-
 
     // raw filtering 
     // const tours = await Tour.find(filter);
