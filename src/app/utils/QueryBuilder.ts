@@ -42,4 +42,13 @@ export class QueryBuilder<T> {
 
     return this;
   }
+
+  // Sort method
+  sort(): this {
+    const sort = this.query.sort || "-createdAt";
+    this.modelQuery = this.modelQuery.sort(sort)
+    return this;
+  };
+
+  
 }
