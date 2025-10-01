@@ -46,9 +46,31 @@ export class QueryBuilder<T> {
   // Sort method
   sort(): this {
     const sort = this.query.sort || "-createdAt";
-    this.modelQuery = this.modelQuery.sort(sort)
+    this.modelQuery = this.modelQuery.sort(sort);
     return this;
-  };
+  }
 
-  
+  // fields method
+  fields(): this {
+    const fields = this.query.fields?.split(",").join(" ") || "";
+    this.modelQuery = this.modelQuery.select(fields);
+    return this;
+  }
+
+  // paginate method
+  paginate(): this {
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+
+    return this;
+  }
+
+  // build method
+  build(){
+    return this.modelQuery;
+    
+  }
 }

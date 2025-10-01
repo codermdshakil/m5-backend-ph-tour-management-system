@@ -17,7 +17,6 @@ const createTour = async (payload: ITour) => {
   return tour;
 };
 
-
 // get all tours
 // const getAllToursOld = async (query: Record<string, string>) => {
 //   const filter = query;
@@ -94,14 +93,17 @@ const createTour = async (payload: ITour) => {
 //   };
 // };
 
-
 // get all tours
 const getAllTours = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Tour.find(), query);
   // implement filter method
-  const tours = await queryBuilder.search(tourSearchableFields).filter().modelQuery;
-  
- 
+  const tours = await queryBuilder
+    .search(tourSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+    .build();
 
   return {
     data: tours,
