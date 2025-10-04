@@ -1,6 +1,8 @@
 import AppError from "../../errorHelpers/appError";
-import { ITourType } from "./tourtype.interface";
-import { TourType } from "./tourtype.model";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { tourTypeSearchableFields } from "./tourType.constant";
+import { ITourType } from "./tourType.interface";
+import { TourType } from "./tourType.model";
 
 // create tour type
 const createTourType = async (payload: Partial<ITourType>) => {
@@ -18,25 +20,34 @@ const createTourType = async (payload: Partial<ITourType>) => {
 };
 
 // get all tour types
-const getAllTourTypes = async () => {
-  const allTours = await TourType.find({});
-  const totalTours = await TourType.countDocuments();
+const getAllTourTypes = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(TourType.find(), query);
+
+  // implement filter method
+  const tourTypes = await queryBuilder
+    .search(tourTypeSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    tourTypes.build(),
+    queryBuilder.getMeta(),
+  ]);
 
   return {
-    data: allTours,
-    meta: {
-      total: totalTours,
-    },
+    data: data,
+    meta: meta,
   };
 };
 
 // update tourType
-const updateTourType = async (tourId:string, payload:Partial<ITourType>) => {
-
+const updateTourType = async (tourId: string, payload: Partial<ITourType>) => {
   const isTourTypeExist = await TourType.findById(tourId);
 
-  if(!isTourTypeExist){
-    throw new AppError(400, "Tour Type is not Found!")
+  if (!isTourTypeExist) {
+    throw new AppError(400, "Tour Type is not Found!");
   }
 
   const updatedTourType = await TourType.findByIdAndUpdate(
@@ -59,10 +70,9 @@ const deleteTourType = async (tourId: string) => {
   return deletedTourType;
 };
 
-
 export const TourTypeServices = {
   createTourType,
   getAllTourTypes,
   updateTourType,
-  deleteTourType
+  deleteTourType,
 };

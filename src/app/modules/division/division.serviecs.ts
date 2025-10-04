@@ -1,5 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelpers/appError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { divisionSearchableFields } from "./division.constant";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 
@@ -17,14 +19,32 @@ const createDivision = async (payload: IDivision) => {
 
 
 // get all division
-const getAllDivisions = async () => {
-    const divisions = await Division.find({});
-    const totalDivisions = await Division.countDocuments();
+const getAllDivisions = async (query: Record<string, string>) => {
+
+   const queryBuilder = new QueryBuilder(Division.find(), query);
+   
+     // implement filter method
+     const divisions = await queryBuilder
+       .search(divisionSearchableFields)
+       .filter()
+       .sort()
+       .fields()
+       .paginate();
+   
+   
+     const [data, meta] = await Promise.all([
+       divisions.build(),
+       queryBuilder.getMeta(),
+     ]);
+
+
+    // const divisions = await Division.find({});
+    // const totalDivisions = await Division.countDocuments();
+
+
     return {
-        data: divisions,
-        meta: {
-            total: totalDivisions
-        }
+        data: data,
+        meta:  meta
     }
 };
 
