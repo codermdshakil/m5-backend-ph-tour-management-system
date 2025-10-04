@@ -3,6 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { userSearchableFields } from "./user.constant";
 import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 
@@ -99,15 +101,26 @@ const updateUser = async ( userId: string, payload: Partial<IUser>, decodedToken
 };
 
 // getall users
-const getAllUser = async () => {
-  const users = await User.find({});
-  const totalUsers = await User.countDocuments();
+const getAllUser = async (query : Record<string, string>) => {
+   
+  const queryBuilder = new QueryBuilder(User.find(), query);
+  
+    // implement filter method
+    const users = await queryBuilder
+      .search(userSearchableFields)
+      .filter()
+      .sort()
+      .fields()
+      .paginate();
+  
+    const [data, meta] = await Promise.all([
+      users.build(),
+      queryBuilder.getMeta(),
+    ]);
 
   return {
-    data: users,
-    meta: {
-      total: totalUsers,
-    },
+    data: data,
+    meta: meta
   };
 };
 

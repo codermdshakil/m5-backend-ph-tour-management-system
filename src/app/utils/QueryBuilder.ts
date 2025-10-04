@@ -1,76 +1,86 @@
 import { Query } from "mongoose";
 import { excludeField } from "../constants";
 
+// Build a QueryBuilder
 export class QueryBuilder<T> {
-    public modelQuery: Query<T[], T>;
-    public readonly query: Record<string, string>
+  public modelQuery: Query<T[], T>;
+  public readonly query: Record<string, string>;
 
-    constructor(modelQuery: Query<T[], T>, query: Record<string, string>) {
-        this.modelQuery = modelQuery;
-        this.query = query;
+  constructor(modelQuery: Query<T[], T>, query: Record<string, string>) {
+    this.modelQuery = modelQuery;
+    this.query = query;
+  }
+
+  // Filter methods
+  filter(): this {
+    // get filter from query
+    const filter = { ...this.query };
+
+    // remove other properties except filter
+    for (const field of excludeField) {
+      delete filter[field];
     }
+    // filter method implement
+    this.modelQuery = this.modelQuery.find(filter);
+    return this;
+  }
 
+  // search method
+  search(searchableField: string[]): this {
+    // get searchTerm
+    const searchTerm = this.query.searchTerm || "";
 
-    filter(): this {
-        const filter = { ...this.query }
+    // based on searchTerm searching on fields
+    const searchQuery = {
+      $or: searchableField.map((field) => ({
+        [field]: { $regex: searchTerm, $options: "i" },
+      })),
+    };
 
-        for (const field of excludeField) {
-            delete filter[field]
-        }
+    // search method
+    this.modelQuery = this.modelQuery.find(searchQuery);
 
-        this.modelQuery = this.modelQuery.find(filter);
+    return this;
+  }
 
-        return this;
-    }
+  // Sort method
+  sort(): this {
+    const sort = this.query.sort || "-createdAt";
+    this.modelQuery = this.modelQuery.sort(sort);
+    return this;
+  }
 
-    search(searchableField: string[]): this {
-        const searchTerm = this.query.searchTerm || ""
-        const searchQuery = {
-            $or: searchableField.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-        }
-        this.modelQuery = this.modelQuery.find(searchQuery)
-        return this
-    }
+  // fields method
+  fields(): this {
+    const fields = this.query.fields?.split(",").join(" ") || "";
+    this.modelQuery = this.modelQuery.select(fields);
+    return this;
+  }
 
-    sort(): this {
+  // paginate method
+  paginate(): this {
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-        const sort = this.query.sort || "-createdAt";
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
 
-        this.modelQuery = this.modelQuery.sort(sort)
+    return this;
+  }
 
-        return this;
-    }
-    fields(): this {
+  // build method
+  build() {
+    return this.modelQuery;
+  }
 
-        const fields = this.query.fields?.split(",").join(" ") || ""
+  async getMeta() {
+    const totalDocuments = await this.modelQuery.model.countDocuments();
 
-        this.modelQuery = this.modelQuery.select(fields)
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
 
-        return this;
-    }
-    paginate(): this {
+    const totalPage = Math.ceil(totalDocuments / limit);
 
-        const page = Number(this.query.page) || 1
-        const limit = Number(this.query.limit) || 10
-        const skip = (page - 1) * limit
-
-        this.modelQuery = this.modelQuery.skip(skip).limit(limit)
-
-        return this;
-    }
-
-    build() {
-        return this.modelQuery
-    }
-
-    async getMeta() {
-        const totalDocuments = await this.modelQuery.model.countDocuments()
-
-        const page = Number(this.query.page) || 1
-        const limit = Number(this.query.limit) || 10
-
-        const totalPage = Math.ceil(totalDocuments / limit)
-
-        return { page, limit, total: totalDocuments, totalPage }
-    }
+    return { page, limit, total: totalDocuments, totalPage };
+  }
 }
