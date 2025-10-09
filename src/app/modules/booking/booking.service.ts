@@ -19,7 +19,6 @@ const getTransactionId = () => {
  */
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
-
   const transactionId = getTransactionId();
 
   const user = await User.findById(userId);
@@ -38,7 +37,7 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     throw new AppError(StatusCodes.BAD_REQUEST, "No tour cost found!");
   }
 
-  //
+  // calculate amount
   const amount = Number(tour.costFrom) * Number(payload?.guestCount!);
 
   const booking = await Booking.create({
@@ -47,8 +46,6 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     ...payload,
   });
 
-  
-
   const payment = await Payment.create({
     booking: booking._id,
     status: PAYMENT_STATUS.UNPAID,
@@ -56,16 +53,15 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     amount: amount,
   });
 
-
   const updatedBooking = await Booking.findByIdAndUpdate(
     booking._id,
     { payment: payment._id },
-    { new: true, runValidators:true },
-  );
-
+    { new: true, runValidators: true }
+  ).populate("user", "name email phone address")
+   .populate("tour", "title costFrom")
+   .populate("payment",);
 
   return updatedBooking;
-
 };
 
 // Frontend(localhost:5173) - User - Tour - Booking (Pending) - Payment(Unpaid) -> SSLCommerz Page -> Payment Complete -> Backend(localhost:5000/api/v1/payment/success) -> Update Payment(PAID) & Booking(CONFIRM) -> redirect to frontend -> Frontend(localhost:5173/payment/success)
