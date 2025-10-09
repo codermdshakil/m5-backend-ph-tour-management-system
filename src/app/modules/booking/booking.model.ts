@@ -15,12 +15,11 @@ const bookingSchema = new Schema<IBooking>({
   payment:{
     type:Schema.Types.ObjectId,
     ref:"Payment",
-    required:true
   },
   status:{
     type:String,
     enum:Object.values(BOOKING_STATUS),
-    default:BOOKING_STATUS.PEDNING
+    default:BOOKING_STATUS.PENDING
   },
   guestCount:{
     type:Number,
