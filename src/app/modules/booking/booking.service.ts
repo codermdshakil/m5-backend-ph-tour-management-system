@@ -13,6 +13,7 @@ const getTransactionId = () => {
 };
 
 /**
+ * Transaction and RollBack
  * Duplicate DB Collections / replica
  *
  * Relica DB -> [ Create Booking -> Create Payment ->  Update Booking -> Error] -> Real DB
@@ -21,7 +22,6 @@ const getTransactionId = () => {
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
   const transactionId = getTransactionId();
 
-  console.log(payload,);
 
   // Implement transaction Rollback
   // transaction rollback initialaise
