@@ -99,9 +99,6 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     }
 
     const sslPayment = await SSLService.sslPaymentInit(sslPayload);
-    console.log(sslPayment, "test");
-
-
 
 
     // transaction rollback commit
@@ -112,6 +109,7 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
       paymentURL:sslPayment.GatewayPageURL,
       booking:updatedBooking
     };
+
   } catch (error) {
     await session.abortTransaction(); // transaction rollback
     session.endSession();
