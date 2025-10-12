@@ -3,6 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelpers/appError";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
+import { SSLService } from "../sslCommerz/sslCommerz.service";
 import { Tour } from "../tour/tour.model";
 import { User } from "../User/user.model";
 import { BOOKING_STATUS, IBooking } from "./booking.interface";
@@ -21,7 +23,6 @@ const getTransactionId = () => {
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
   const transactionId = getTransactionId();
-
 
   // Implement transaction Rollback
   // transaction rollback initialaise
@@ -49,22 +50,25 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     const amount = Number(tour.costFrom) * Number(payload?.guestCount!);
 
     const booking = await Booking.create(
-      [{
-        user: userId,
-        status: BOOKING_STATUS.PENDING,
-        ...payload,
-      }],
+      [
+        {
+          user: userId,
+          status: BOOKING_STATUS.PENDING,
+          ...payload,
+        },
+      ],
       { session: session }
     );
 
-
     const payment = await Payment.create(
-      [{
-        booking: booking[0]._id,
-        status: PAYMENT_STATUS.UNPAID,
-        transactionId: transactionId,
-        amount: amount,
-      }],
+      [
+        {
+          booking: booking[0]._id,
+          status: PAYMENT_STATUS.UNPAID,
+          transactionId: transactionId,
+          amount: amount,
+        },
+      ],
       { session: session }
     );
 
@@ -77,14 +81,38 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
       .populate("tour", "title costFrom")
       .populate("payment");
 
+
+    // SSLCommerz Payment Implement
+
+    const userAddress = (updatedBooking?.user as any).address;
+    const userEmail = (updatedBooking?.user as any).email;
+    const userName = (updatedBooking?.user as any).name;
+    const userPhone = (updatedBooking?.user as any).phone;
+
+    const sslPayload : ISSLCommerz= {
+      name:userName,
+      email:userEmail,
+      address:userAddress,
+      phoneNumber:userPhone,
+      amount:amount,
+      transactionId:transactionId
+    }
+
+    const sslPayment = await SSLService.sslPaymentInit(sslPayload);
+    console.log(sslPayment, "test");
+
+
+
+
     // transaction rollback commit
     await session.commitTransaction(); // transaction
     session.endSession();
 
-    return updatedBooking;
-
+    return {
+      paymentURL:sslPayment.GatewayPageURL,
+      booking:updatedBooking
+    };
   } catch (error) {
-
     await session.abortTransaction(); // transaction rollback
     session.endSession();
     throw error;
